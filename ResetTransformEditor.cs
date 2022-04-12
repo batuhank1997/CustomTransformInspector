@@ -35,45 +35,14 @@ public class CustomTransformInspector : Editor
 		StandardTransformInspector();
 	}
 
-	void ResetPosition()
-	{
-		_transform.localPosition = Vector3.zero;
-	}
-
-	void ResetRotation()
-	{
-		_transform.localRotation = Quaternion.Euler(Vector3.zero);
-	}
-
-	void ResetScale()
-	{
-		_transform.localScale = Vector3.one;
-	}
-
-	public static GUIStyle SetStyles(GUIStyle style)
-	{
-		//style = new GUIStyle(GUI.skin.window);
-		var IconStyle = new GUIStyle();
-		style = new GUIStyle(GUI.skin.button);
-		style.normal.textColor = Color.white;
-		style.normal.background = style.onActive.background;
-		style.alignment = TextAnchor.MiddleLeft;
-		style.fixedWidth = 20;
-
-		return style;
-	}
-
 	private void StandardTransformInspector()
 	{
 		bool didPositionChange = false;
 		bool didRotationChange = false;
 		bool didScaleChange = false;
 
+		GUIStyle style = EditorStyles.miniButton;
 
-		GUIStyle style = new GUIStyle();
-		style = EditorStyles.miniButton;
-
-		//style.
 		style = SetStyles(style);
 
 		// Store current values for checking later
@@ -94,9 +63,14 @@ public class CustomTransformInspector : Editor
 		EditorGUILayout.BeginHorizontal();
 
 		EditorGUI.BeginChangeCheck();
-		Vector3 localEulerAngles = EditorGUILayout.Vector3Field("Euler Rotation", _transform.localEulerAngles);
+
+		Vector3 localEulerAngles;
+
+		localEulerAngles = EditorGUILayout.Vector3Field("Rotation", TransformUtils.GetInspectorRotation(_transform));
+
 		if (EditorGUI.EndChangeCheck())
 			didRotationChange = true;
+
 		if (GUILayout.Button("R", style))
 		{
 			ResetRotation();
@@ -175,5 +149,34 @@ public class CustomTransformInspector : Editor
 			toApply.z = _transform.localPosition.z;
 
 		return toApply;
+	}
+
+	void ResetPosition()
+	{
+		_transform.localPosition = Vector3.zero;
+	}
+
+	void ResetRotation()
+	{
+		_transform.localRotation = Quaternion.identity;
+		TransformUtils.SetInspectorRotation(_transform, Vector3.zero);
+	}
+
+	void ResetScale()
+	{
+		_transform.localScale = Vector3.one;
+	}
+
+	public static GUIStyle SetStyles(GUIStyle style)
+	{
+		//style = new GUIStyle(GUI.skin.window);
+		var IconStyle = new GUIStyle();
+		style = new GUIStyle(GUI.skin.button);
+		style.normal.textColor = Color.white;
+		style.normal.background = style.onActive.background;
+		style.alignment = TextAnchor.MiddleLeft;
+		style.fixedWidth = 20;
+
+		return style;
 	}
 }
